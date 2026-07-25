@@ -1,5 +1,10 @@
 # OpenKinematics
 
+[![Python](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/devwithchai/OpenKinematics)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/devwithchai/OpenKinematics)](https://github.com/devwithchai/OpenKinematics/releases)
+[![Tests](https://github.com/devwithchai/OpenKinematics/actions/workflows/tests.yml/badge.svg)](https://github.com/devwithchai/OpenKinematics/actions/workflows/tests.yml)
+
 > An educational Python library for robot kinematics built from first principles.
 
 OpenKinematics is an open-source Python library that implements fundamental
@@ -108,6 +113,19 @@ public `Robot` facade API.
 
 ---
 
+## Visualization
+
+### 2R Planar Robot
+![2R Planar Robot](docs/images/planar_robot.png)
+
+### SCARA Robot
+![SCARA Robot](docs/images/scara_robot.png)
+
+### 6-DOF Articulated Robot
+![6-DOF Articulated Robot](docs/images/articulated_robot.png)
+
+---
+
 ## Supported Robot Models
 
 OpenKinematics currently supports the following robot manipulators:
@@ -167,13 +185,13 @@ The library currently provides:
 - ✅ Runnable example programs
 - ✅ Packaging and installation support
 - ✅ Comprehensive API documentation
+- ✅ Continuous Integration (GitHub Actions)
+- ✅ Expanded developer documentation
 
 Planned future work includes:
 
 - Dynamics module
 - Theory documentation
-- Continuous Integration (GitHub Actions)
-- Expanded developer documentation
 - PyPI release
 
 ---
@@ -203,8 +221,7 @@ These documents are planned for a future release and are not yet available.
 Contributions, bug reports, feature requests, and documentation improvements
 are welcome.
 
-Contributor guidelines are currently being prepared and will be published in
-`CONTRIBUTING.md`.
+See `CONTRIBUTING.md` for development setup, coding standards, testing expectations, and contribution workflow.
 
 Until then, contributors are encouraged to:
 
