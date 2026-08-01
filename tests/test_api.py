@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from matplotlib.figure import Figure
 
 from open_kinematics.api import Robot
 
@@ -226,6 +228,59 @@ class TestAPI(unittest.TestCase):
 
         for expected, actual in zip(ndarray_solution, list_solution):
             self.assertTrue(np.allclose(expected, actual, atol=1e-6))
+
+    def test_planar_plot_workspace_dispatch(self):
+        fig, ax = self.planar.plot_workspace(num_samples=100)
+        self.assertEqual(ax.name, "rectilinear")
+        plt.close(fig)
+
+    def test_scara_plot_workspace_dispatch(self):
+        fig, ax = self.scara.plot_workspace(num_samples=100)
+        self.assertEqual(ax.name, "rectilinear")
+        plt.close(fig)
+
+    def test_articulated_plot_workspace_dispatch(self):
+        fig, ax = self.articulated.plot_workspace(num_samples=100)
+        self.assertEqual(ax.name, "3d")
+        plt.close(fig)
+
+    def test_animate_returns_expected_types(self):
+        fig, ax, anim = self.planar.animate([[0.0, 0.0], [0.3, 0.2]])
+        self.assertIsInstance(fig, Figure)
+        self.assertEqual(ax.name, "rectilinear")
+        self.assertIsInstance(anim, FuncAnimation)
+        plt.close(fig)
+
+    def test_animate_empty_trajectory_raises(self):
+        with self.assertRaises(ValueError):
+            self.planar.animate([])
+
+    def test_plot_workspace_unsupported_input_raises(self):
+        with self.assertRaises(TypeError):
+            Robot(object()).plot_workspace()
+
+    def test_planar_plot_forwards_trajectory(self):
+        trajectory = [
+            [0.0, 0.0],
+            [0.4, 0.3],
+            [0.8, -0.2],
+        ]
+        fig, ax = self.planar.plot([0.5, 0.3], trajectory=trajectory)
+        labels = [t.get_text() for t in ax.get_legend().get_texts()]
+        self.assertIn("Trajectory", labels)
+        plt.close(fig)
+
+    def test_articulated_plot_forwards_trajectory(self):
+        trajectory = [
+            [0.0, 0.0, 0.0],
+            [0.2, -0.1, 0.3],
+            [0.4, -0.2, 0.5],
+        ]
+        fig, ax = self.articulated.plot([0.0, 0.0, 0.0], trajectory=trajectory)
+        labels = [t.get_text() for t in ax.get_legend().get_texts()]
+        self.assertIn("Trajectory", labels)
+
+        plt.close(fig)
 
 if __name__ == "__main__":
     unittest.main()

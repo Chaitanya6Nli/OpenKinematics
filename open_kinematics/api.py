@@ -19,8 +19,12 @@ from open_kinematics.solvers.geometric_ik import planar_2r_ik, scara_ik
 
 from open_kinematics.solvers.jacobian_solver import geometric_jacobian, pseudoinverse_ik
 
+from open_kinematics.visualization import styles
 from open_kinematics.visualization.plot_2d import plot_2d
 from open_kinematics.visualization.plot_3d import plot_3d
+
+from open_kinematics.visualization.workspace import plot_workspace as _visualize_workspace
+from open_kinematics.visualization.animate import animate as _animate_trajectory
 
 class Robot:
     """
@@ -118,12 +122,13 @@ class Robot:
 
     # Plotting
 
-    def plot(self, joint_values, ax=None):
+    def plot(self, joint_values, ax=None, **plot_kwargs):
         """
         Visualize the wrapped robot configuration.
 
         :param joint_values: Joint values describing the robot configuration.
         :param ax: Existing Matplotlib axes to draw on. If ``None``, a new figure and axes are created.
+        :param plot_kwargs: Additional keyword arguments forwarded to the visualization function (for example trajectory or view).
         :return: Tuple containing the created figure and axes.
         :raises TypeError:  If the wrapped robot type is unsupported,
             or propagated from ``forward_kinematics()`` if ``joint_values`` has an invalid type.
@@ -135,7 +140,7 @@ class Robot:
         if renderer is None:
             raise TypeError(f"Unsupported robot type: {type(self._robot).__name__}")
 
-        return renderer(self._robot, joint_values, ax=ax)
+        return renderer(self._robot, joint_values, ax=ax, **plot_kwargs)
 
     # Validation Helper
 
@@ -236,3 +241,42 @@ class Robot:
 
         handler = getattr(self, method_name)
         return handler(target_pose, **kwargs)
+
+    # Workspace Visualization
+
+    def plot_workspace(self, joint_values=None, num_samples=8000, seed=None, ax=None):
+        """
+        Visualize the reachable workspace of the wrapped robot.
+
+        :param joint_values: Reserved for future workspace-overlay support.
+        :param num_samples: Number of random workspace samples.
+        :param seed: Optional random seed.
+        :param ax: Existing Matplotlib axes.
+        :return: Tuple (fig, ax).
+        :raises TypeError: Propagated from ``plot_workspace()`` if the robot type is unsupported.
+        :raises ValueError: Propagated if ``num_samples`` is not a positive integer.
+        """
+        return _visualize_workspace(self._robot, joint_values=joint_values, num_samples=num_samples, seed=seed, ax=ax)
+
+    # Animate
+
+    def animate(self, trajectory, ax=None, interval=styles.ANIMATION_INTERVAL_MS, **plot_kwargs):
+        """
+        Animate the wrapped robot following a sequence of joint configurations.
+
+        :param trajectory: Non-empty sequence of joint configurations.
+        :param ax: Existing Matplotlib axes.
+        :param interval: Delay between animation frames.
+        :param plot_kwargs: Additional keyword arguments forwarded to the visualization function.
+        :return: Tuple (fig, ax, anim).
+        :raises TypeError: Propagated from ``animate()`` if the robot type is unsupported,
+            or if a trajectory configuration contains invalid joint value types.
+        :raises ValueError: Propagated from ``animate()`` if ``trajectory`` is empty,
+            or if a trajectory configuration contains an invalid number of joint values.
+        :raises JointLimitViolation: Propagated from ``animate()`` if any trajectory
+            configuration exceeds the configured joint limits.
+
+        .. note::
+            Keep a reference to the returned ``anim`` object.
+        """
+        return _animate_trajectory(self._robot, trajectory, ax=ax, interval=interval, **plot_kwargs)
